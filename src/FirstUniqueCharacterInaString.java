@@ -55,9 +55,6 @@ public class FirstUniqueCharacterInaString {
 
         String c = "sssssssssssssssssssbbbbbbbbbbbbbbbdddddddddddddddddddda";
         System.out.println(firstUniqChar(c));
-
-
-
     }
 
 }
