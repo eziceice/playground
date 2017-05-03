@@ -20,7 +20,7 @@ public class ExcelSheetColumnNumber {
     /**
      * 把字符串看成是一个26进制数，A-Z相当于1-26，
      * 那么直接按照进制转换的规则去做就行。
-     * 比如ABC=1×262+2×261+3×260=731。
+     * 比如ABC=1×26^2+2×26^1+3×26^0=731。
      */
     public static int titleToNumber(String s) {
         int result = 0;
