@@ -4,7 +4,7 @@ import java.util.Collections;
 /**
  * Created by Ryan on 2017/4/24.
  */
-public class rotateArray {
+public class RotateArray {
     /**
      * 第一个循环是需要交换几个数字
      * 第二个循环是将最后的数字移到第一位并且将其他数字后置
