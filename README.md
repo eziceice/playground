@@ -1,2 +1,2 @@
-# LeetCodeSolution
-Solution for Leetcode Java
+# Solution Playground
+A Java playground for all algorithm and data structure problems 
