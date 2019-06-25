@@ -1,0 +1,75 @@
+import java.util.*;
+import java.math.BigDecimal;
+import com.myob.codeexercise.pojo.Salary;
+
+dialect  "mvel"
+
+declare TaxConstants
+    month: BigDecimal
+    level1: BigDecimal
+    level2: BigDecimal
+    level3: BigDecimal
+    level4: BigDecimal
+    level2CostPerDollar: BigDecimal
+    level3CostPerDollar: BigDecimal
+    level4CostPerDollar: BigDecimal
+    level5CostPerDollar: BigDecimal
+    level3CostPrefix: BigDecimal
+    level4CostPrefix: BigDecimal
+    level5CostPrefix: BigDecimal
+end
+
+rule "Initialize global"
+salience 1000
+    when
+    then
+        insert(new TaxConstants(new BigDecimal(12),
+        new BigDecimal(18200), new BigDecimal(37000), new BigDecimal(87000), new BigDecimal(180000),
+        new BigDecimal(0.19), new BigDecimal(0.325), new BigDecimal(0.37), new BigDecimal(0.45),
+        new BigDecimal(3572), new BigDecimal(19822), new BigDecimal(54232)));
+end
+
+
+rule "Calculate Income Tax - Income between $0 to $18,200"
+    when
+        TaxConstants($lv1: level1)
+        salaryInstance:Salary(annualSalary <= $lv1);
+    then
+        salaryInstance.setIncomeTax(BigDecimal.ZERO);
+end
+
+rule "Calculate Income Tax - Income between $18,201 to $37,000"
+    when
+        TaxConstants($month: month, $lv1: level1, $lv2: level2, $lv2CostPerDollar: level2CostPerDollar)
+        salaryInstance:Salary(annualSalary <= $lv2 && annualSalary > $lv1);
+    then
+        incomeTax = salaryInstance.getAnnualSalary().subtract($lv1).multiply($lv2CostPerDollar).divide($month, 0, BigDecimal.ROUND_HALF_UP);
+        salaryInstance.setIncomeTax(incomeTax);
+end
+
+rule "Calculate Income Tax - Income between $37,001 to $87,000"
+    when
+        TaxConstants($month: month, $lv2: level2, $lv3: level3, $lv3CostPerDollar: level3CostPerDollar, $lv3CostPrefix: level3CostPrefix)
+        salaryInstance:Salary(annualSalary <= $lv3 && annualSalary > $lv2);
+    then
+        incomeTax = $lv3CostPrefix.add(salaryInstance.getAnnualSalary().subtract($lv2).multiply($lv3CostPerDollar)).divide($month, 0, BigDecimal.ROUND_HALF_UP);
+        salaryInstance.setIncomeTax(incomeTax);
+end
+
+rule "Calculate Income Tax - Income between $87,001 to $180,000"
+    when
+        TaxConstants($month: month, $lv3: level3, $lv4: level4, $lv4CostPerDollar: level4CostPerDollar, $lv4CostPrefix: level4CostPrefix)
+        salaryInstance:Salary(annualSalary <= $lv4 && annualSalary > $lv3);
+    then
+        incomeTax = $lv4CostPrefix.add(salaryInstance.getAnnualSalary().subtract($lv3).multiply($lv4CostPerDollar)).divide($month, 0, BigDecimal.ROUND_HALF_UP);
+        salaryInstance.setIncomeTax(incomeTax);
+end
+
+rule "Calculate Income Tax - Income larger than $180,000"
+    when
+        TaxConstants($month: month, $lv4: level4, $lv5CostPerDollar: level5CostPerDollar, $lv5CostPrefix: level5CostPrefix)
+        salaryInstance:Salary(annualSalary > $lv4);
+    then
+        incomeTax = $lv5CostPrefix.add(salaryInstance.getAnnualSalary().subtract($lv4).multiply($lv5CostPerDollar)).divide($month, 0, BigDecimal.ROUND_HALF_UP);
+        salaryInstance.setIncomeTax(incomeTax);
+end

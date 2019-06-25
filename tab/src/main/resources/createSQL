@@ -1,0 +1,10 @@
+create table bet
+(
+	bet_id INT AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    betType INT NOT NULL,
+    propNumber Int NOT NULL,
+    betDate DateTime,
+    investmentAmount DOUBLE NOT NULL,
+    primary key (bet_id)
+);
